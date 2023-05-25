@@ -70,12 +70,17 @@
                             <div class="col-lg-12">
                                 <div class="widget">
                                     <div class="widget-body">
-                                        <img loading="lazy" decoding="async" src="images/author.jpg" alt="About Me"
-                                            class="w-100 author-thumb-sm d-block">
-                                        <h2 class="widget-title my-3">Hootan Safiyari</h2>
+                                        @if (Storage::disk('public')->exists('users/' . $me->image) && $me->image)
+                                            <img loading="lazy" decoding="async"
+                                                src="{{ Storage::url('users/' . $me->image) }}" alt="{{ $me->name }}"
+                                                class="w-100" width="420" height="280">
+                                        @else
+                                            <img loading="lazy" decoding="async" src="images/post/default-thumbnail.jpg"
+                                                alt="Post Thumbnail" class="w-100" width="420" height="280">
+                                        @endif
+                                        <h2 class="widget-title my-3">{{ $me->name ?? '' }}</h2>
                                         <p class="mb-3 pb-2">
-                                            Hello, I’m Hootan Safiyari. A Content writer, Developer, and Storyteller.
-                                            Working as a Content writer at CoolTech Agency. Quam nihil …
+                                            {!! Str::limit($me->description, 100) !!}
                                         </p>
                                         <a href="about.html" class="btn btn-sm btn-outline-primary">Know More</a>
                                     </div>

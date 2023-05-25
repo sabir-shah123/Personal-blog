@@ -5,7 +5,7 @@
             <ul class="list">
 
                 <li class="header">MAIN NAVIGATION</li>
-                
+
                 <li class="{{ Request::is('admin/dashboard') ? 'active' : '' }}">
                     <a href="{{ route('admin.dashboard') }}">
                         <i class="material-icons">dashboard</i>
@@ -16,18 +16,6 @@
                     <a href="{{ route('admin.sliders.index') }}">
                         <i class="material-icons">burst_mode</i>
                         <span>Sliders</span>
-                    </a>
-                </li>
-                <li class="{{ Request::is('admin/properties*') ? 'active' : '' }}">
-                    <a href="{{ route('admin.properties.index') }}">
-                        <i class="material-icons">home</i>
-                        <span>Property</span>
-                    </a>
-                </li>
-                <li class="{{ Request::is('admin/features*') ? 'active' : '' }}">
-                    <a href="{{ route('admin.features.index') }}">
-                        <i class="material-icons">star</i>
-                        <span>Features</span>
                     </a>
                 </li>
 
@@ -72,7 +60,7 @@
                         <span>Gallery</span>
                     </a>
                 </li>
- 
+
                 <li class="{{ Request::is('admin/settings*') ? 'active' : '' }}">
                     <a href="javascript:void(0);" class="menu-toggle">
                         <i class="material-icons">settings</i>
@@ -101,10 +89,10 @@
                         </li>
                     </ul>
                 </li>
-                
+
 
             </ul>
         </div>
         <!-- #Menu -->
-        
+
     </aside>

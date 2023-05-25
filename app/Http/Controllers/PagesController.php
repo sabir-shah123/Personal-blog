@@ -19,6 +19,7 @@ class PagesController extends Controller
     // BLOG PAGE
     public function blog()
     {
+        dd('blog');
         $month = request('month');
         $year = request('year');
 

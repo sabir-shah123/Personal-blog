@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\About;
 use App\Category;
 use App\Message;
 use App\Post;
@@ -24,19 +25,12 @@ class AppServiceProvider extends ServiceProvider
 
         if (!$this->app->runningInConsole()) {
 
-            view()->composer('frontend.partials.footer', function ($view) {
-                $view->with('footersettings', Setting::select('footer', 'aboutus', 'facebook', 'twitter', 'linkedin')->get());
-            });
-
             //categories
             view()->share('categories', Category::withCount('posts')->get());
+            view()->share('me', About::first());
 
             //recommended posts
             view()->share('recommendedposts', Post::latest()->where('status', 1)->take(3)->get());
-
-            view()->composer('frontend.partials.navbar', function ($view) {
-                $view->with('navbarsettings', Setting::select('name')->get());
-            });
 
             view()->composer('backend.partials.navbar', function ($view) {
                 $view->with('countmessages', Message::latest()->where('agent_id', Auth::id())->count());
