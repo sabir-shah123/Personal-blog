@@ -35,7 +35,12 @@
                         <hr>
                         <div class="form-group">
                             <label for="">Body</label>
-                            <textarea name="body" id="tinymce">{{ old('body') }}</textarea>
+                            <textarea name="body" class="tinymce">{{ old('body') }}</textarea>
+                        </div>
+                        <hr>
+                         <div class="form-group">
+                            <label for="">Post Excerpt</label>
+                            <textarea name="excerpt" class="tinymce">{{ old('excerpt') }}</textarea>
                         </div>
 
                     </div>
@@ -105,7 +110,7 @@
     <script>
         $(function() {
             tinymce.init({
-                selector: "textarea#tinymce",
+                selector: ".tinymce",
                 theme: "modern",
                 height: 300,
                 plugins: [

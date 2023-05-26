@@ -24,10 +24,11 @@ class AppServiceProvider extends ServiceProvider
         Schema::defaultStringLength(191);
 
         if (!$this->app->runningInConsole()) {
-
             //categories
             view()->share('categories', Category::withCount('posts')->get());
+            view()->share('tags', Tag::withCount('posts')->get());
             view()->share('me', About::first());
+            view()->share('settings', json_decode(json_encode(Setting::get()->pluck('value', 'key')->toArray())));
 
             //recommended posts
             view()->share('recommendedposts', Post::latest()->where('status', 1)->take(3)->get());
@@ -37,17 +38,11 @@ class AppServiceProvider extends ServiceProvider
                 $view->with('navbarmessages', Message::latest()->where('agent_id', Auth::id())->take(5)->get());
             });
 
-            view()->composer('pages.contact', function ($view) {
-                $view->with('contactsettings', Setting::select('phone', 'email', 'address')->get());
-            });
-
             view()->composer('pages.blog.sidebar', function ($view) {
-
                 $archives = Post::archives();
                 $categories = Category::has('posts')->withCount('posts')->get();
                 $tags = Tag::has('posts')->get();
                 $popularposts = Post::orderBy('view_count', 'desc')->take(5)->get();
-
                 $view->with(compact('archives', 'categories', 'tags', 'popularposts'));
             });
 

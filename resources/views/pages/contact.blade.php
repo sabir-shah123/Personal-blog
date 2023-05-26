@@ -1,117 +1,64 @@
 @extends('frontend.layouts.app')
-
 @section('styles')
-
 @endsection
-
 @section('content')
-
     <section class="section">
         <div class="container">
             <div class="row">
-
-                <div class="col s12 m8">
-                    <div class="contact-content">
-                        <h4 class="contact-title">Contact Us</h4>
-
-                        <form id="contact-us" action="" method="POST">
-                            @csrf
-                            <input type="hidden" name="mailto" value="{{ $contactsettings[0]['email'] ?? 'p4alam@gmail.com' }}">
-
-                            @auth
-                                <input type="hidden" name="user_id" value="{{ auth()->id() }}">
-                            @endauth
-
-                            @auth
-                                <div class="input-field col s12">
-                                    <i class="material-icons prefix">person</i>
-                                    <input id="name" name="name" type="text" class="validate" value="{{ auth()->user()->name }}" readonly>
-                                    <label for="name">Name</label>
-                                </div>
-                            @endauth
-                            @guest
-                                <div class="input-field col s12">
-                                    <i class="material-icons prefix">person</i>
-                                    <input id="name" name="name" type="text" class="validate">
-                                    <label for="name">Name</label>
-                                </div>
-                            @endguest
-
-                            @auth
-                                <div class="input-field col s12">
-                                    <i class="material-icons prefix">mail</i>
-                                    <input id="email" name="email" type="email" class="validate" value="{{ auth()->user()->email }}" readonly>
-                                    <label for="email">Email</label>
-                                </div>
-                            @endauth
-                            @guest
-                                <div class="input-field col s12">
-                                    <i class="material-icons prefix">mail</i>
-                                    <input id="email" name="email" type="email" class="validate">
-                                    <label for="email">Email</label>
-                                </div>
-                            @endguest
-
-                            <div class="input-field col s12">
-                                <i class="material-icons prefix">phone</i>
-                                <input id="phone" name="phone" type="number" class="validate">
-                                <label for="phone">Phone</label>
-                            </div>
-
-                            <div class="input-field col s12">
-                                <i class="material-icons prefix">mode_edit</i>
-                                <textarea id="message" name="message" class="materialize-textarea"></textarea>
-                                <label for="message">Message</label>
-                            </div>
-                            
-                            <button id="msgsubmitbtn" class="btn waves-effect waves-light indigo darken-4 btn-large" type="submit">
-                                <span>SEND</span>
-                                <i class="material-icons right">send</i>
-                            </button>
-
-                        </form>
-
+                <div class="col-12">
+                    <div class="breadcrumbs mb-4"> <a href="index.html">Home</a>
+                        <span class="mx-1">/</span> <a href="#!">Contact</a>
                     </div>
-                </div> <!-- /.col -->
-
-                <div class="col s12 m4">
-                    <div class="contact-sidebar">
-                        <div class="m-t-30">
-                            <i class="material-icons left">call</i>
-                            <h6 class="uppercase">Call us Now</h6>
-                            @if(isset($contactsettings[0]) && $contactsettings[0]['phone'])
-                                <h6 class="bold m-l-40">{{ $contactsettings[0]['phone'] }}</h6>
-                            @endif
-                        </div>
-                        <div class="m-t-30">
-                            <i class="material-icons left">mail</i>
-                            <h6 class="uppercase">Email Address</h6>
-                            @if(isset($contactsettings[0]) && $contactsettings[0]['email'])
-                                <h6 class="bold m-l-40">{{ $contactsettings[0]['email'] }}</h6>
-                            @endif
-                        </div>
-                        <div class="m-t-30">
-                            <i class="material-icons left">map</i>
-                            <h6 class="uppercase">Address</h6>
-                            @if(isset($contactsettings[0]) && $contactsettings[0]['address'])
-                                <h6 class="bold m-l-40">{!! $contactsettings[0]['address'] !!}</h6>
-                            @endif
+                </div>
+                <div class="col-lg-4">
+                    <div class="pr-0 pr-lg-4">
+                        <div class="content">{{ $settings->aboutus ?? '' }}
+                            <div class="mt-5">
+                                <p class="h3 mb-3 font-weight-normal"><a class="text-dark"
+                                        href="mailto:hello@reporter.com">{{ $settings->email ?? '' }}</a>
+                                </p>
+                                <p class="mb-3"><a class="text-dark" href="tel:&#43;211234565523">&#43;211234565523</a>
+                                </p>
+                                <p class="mb-2">
+                                    {{ $settings->address ?? '' }}
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </div>
-
+                <div class="col-lg-6 mt-4 mt-lg-0">
+                    <form method="POST" action="#!" class="row">
+                        <div class="col-md-6">
+                            <input type="text" class="form-control mb-4" placeholder="Name" name="name"
+                                id="name">
+                        </div>
+                        <div class="col-md-6">
+                            <input type="email" class="form-control mb-4" placeholder="Email" name="email"
+                                id="email">
+                        </div>
+                        <div class="col-12">
+                            <input type="text" class="form-control mb-4" placeholder="Subject" name="subject"
+                                id="subject">
+                        </div>
+                        <div class="col-12">
+                            <textarea name="message" id="message" class="form-control mb-4" placeholder="Type You Message Here" rows="5"></textarea>
+                        </div>
+                        <div class="col-12">
+                            <button class="btn btn-outline-primary" type="submit">Send Message</button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </section>
-
 @endsection
 
 @section('scripts')
     <script>
         $('textarea#message').characterCounter();
 
-        $(function(){
-            $(document).on('submit','#contact-us',function(e){
+        $(function() {
+            $(document).on('submit', '#contact-us', function(e) {
                 e.preventDefault();
 
                 var data = $(this).serialize();
@@ -124,26 +71,34 @@
                     data: data,
                     beforeSend: function() {
                         $(btn).addClass('disabled');
-                        $(btn).empty().append('<span>LOADING...</span><i class="material-icons right">rotate_right</i>');
+                        $(btn).empty().append(
+                            '<span>LOADING...</span><i class="material-icons right">rotate_right</i>'
+                        );
                     },
                     success: function(data) {
                         if (data.message) {
-                            M.toast({html: data.message, classes:'green darken-4'})
+                            M.toast({
+                                html: data.message,
+                                classes: 'green darken-4'
+                            })
                         }
                     },
                     error: function(xhr) {
-                        M.toast({html: 'ERROR: Failed to send message!', classes: 'red darken-4'})
+                        M.toast({
+                            html: 'ERROR: Failed to send message!',
+                            classes: 'red darken-4'
+                        })
                     },
                     complete: function() {
                         $('form#contact-us')[0].reset();
                         $(btn).removeClass('disabled');
-                        $(btn).empty().append('<span>SEND</span><i class="material-icons right">send</i>');
+                        $(btn).empty().append(
+                            '<span>SEND</span><i class="material-icons right">send</i>');
                     },
                     dataType: 'json'
                 });
 
             })
         })
-
     </script>
 @endsection

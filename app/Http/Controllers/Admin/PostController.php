@@ -2,18 +2,17 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Post;
 use App\Category;
-use App\Tag;
-use App\Comment;
-use Illuminate\Support\Str;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Storage;
-use Intervention\Image\Facades\Image;
-use Carbon\Carbon;
-use Toastr;
+use App\Post;
+use App\Tag;
 use Auth;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use Intervention\Image\Facades\Image;
+use Toastr;
 
 class PostController extends Controller
 {
@@ -22,42 +21,41 @@ class PostController extends Controller
     {
         $posts = Post::latest()->withCount('comments')->get();
 
-        return view('admin.posts.index',compact('posts'));
+        return view('admin.posts.index', compact('posts'));
     }
-
 
     public function create()
     {
         $categories = Category::all();
         $tags = Tag::all();
-        return view('admin.posts.create',compact('categories','tags'));
+        return view('admin.posts.create', compact('categories', 'tags'));
     }
-
 
     public function store(Request $request)
     {
         $request->validate([
-            'title'     => 'required|unique:posts|max:255',
-            'image'     => 'required|mimes:jpeg,jpg,png',
-            'categories'=> 'required',
-            'tags'      => 'required',
-            'body'      => 'required'
+            'title' => 'required|unique:posts|max:255',
+            'image' => 'required|mimes:jpeg,jpg,png',
+            'categories' => 'required',
+            'tags' => 'required',
+            'body' => 'required',
+            'excerpt' => 'required',
         ]);
 
         $image = $request->file('image');
-        $slug  = Str::slug($request->title);
+        $slug = Str::slug($request->title);
 
-        if(isset($image)){
+        if (isset($image)) {
             $currentDate = Carbon::now()->toDateString();
-            $imagename = $slug.'-'.$currentDate.'-'.uniqid().'.'.$image->getClientOriginalExtension();
+            $imagename = $slug . '-' . $currentDate . '-' . uniqid() . '.' . $image->getClientOriginalExtension();
 
-            if(!Storage::disk('public')->exists('posts')){
+            if (!Storage::disk('public')->exists('posts')) {
                 Storage::disk('public')->makeDirectory('posts');
             }
             $postimage = Image::make($image)->resize(1600, 980)->stream();
-            Storage::disk('public')->put('posts/'.$imagename, $postimage);
+            Storage::disk('public')->put('posts/' . $imagename, $postimage);
 
-        }else{
+        } else {
             $imagename = 'default.png';
         }
 
@@ -67,7 +65,8 @@ class PostController extends Controller
         $post->slug = $slug;
         $post->image = $imagename;
         $post->body = $request->body;
-        if(isset($request->status)){
+        $post->excerpt = $request->excerpt;
+        if (isset($request->status)) {
             $post->status = true;
         }
         $post->is_approved = true;
@@ -81,56 +80,52 @@ class PostController extends Controller
 
     }
 
-
     public function show(Post $post)
     {
         $post = Post::withCount('comments')->find($post->id);
 
-        return view('admin.posts.show',compact('post'));
+        return view('admin.posts.show', compact('post'));
     }
-
 
     public function edit(Post $post)
     {
         $categories = Category::all();
         $tags = Tag::all();
         $post = Post::find($post->id);
-
         $selectedtag = $post->tags->pluck('id');
-
-        return view('admin.posts.edit',compact('categories','tags','post','selectedtag'));
+        return view('admin.posts.edit', compact('categories', 'tags', 'post', 'selectedtag'));
     }
-
 
     public function update(Request $request, $post)
     {
         $request->validate([
-            'title'     => 'required|max:255',
-            'image'     => 'mimes:jpeg,jpg,png',
-            'categories'=> 'required',
-            'tags'      => 'required',
-            'body'      => 'required'
+            'title' => 'required|max:255',
+            'image' => 'mimes:jpeg,jpg,png',
+            'categories' => 'required',
+            'tags' => 'required',
+            'body' => 'required',
+            'excerpt' => 'required',
         ]);
 
         $image = $request->file('image');
-        $slug  = Str::slug($request->title);
-        
+        $slug = Str::slug($request->title);
+
         $post = Post::find($post->id);
 
-        if(isset($image)){
+        if (isset($image)) {
             $currentDate = Carbon::now()->toDateString();
-            $imagename = $slug.'-'.$currentDate.'-'.uniqid().'.'.$image->getClientOriginalExtension();
+            $imagename = $slug . '-' . $currentDate . '-' . uniqid() . '.' . $image->getClientOriginalExtension();
 
-            if(!Storage::disk('public')->exists('posts')){
+            if (!Storage::disk('public')->exists('posts')) {
                 Storage::disk('public')->makeDirectory('posts');
             }
-            if(Storage::disk('public')->exists('posts/'.$post->image)){
-                Storage::disk('public')->delete('posts/'.$post->image);
+            if (Storage::disk('public')->exists('posts/' . $post->image)) {
+                Storage::disk('public')->delete('posts/' . $post->image);
             }
             $postimage = Image::make($image)->resize(1600, 980)->stream();
-            Storage::disk('public')->put('posts/'.$imagename, $postimage);
+            Storage::disk('public')->put('posts/' . $imagename, $postimage);
 
-        }else{
+        } else {
             $imagename = $post->image;
         }
 
@@ -139,9 +134,11 @@ class PostController extends Controller
         $post->slug = $slug;
         $post->image = $imagename;
         $post->body = $request->body;
-        if(isset($request->status)){
+        $post->excerpt = $request->excerpt;
+
+        if (isset($request->status)) {
             $post->status = true;
-        }else{
+        } else {
             $post->status = false;
         }
         $post->is_approved = true;
@@ -154,13 +151,12 @@ class PostController extends Controller
         return redirect()->route('admin.posts.index');
     }
 
-
     public function destroy(Post $post)
     {
         $post = Post::find($post->id);
 
-        if(Storage::disk('public')->exists('posts/'.$post->image)){
-            Storage::disk('public')->delete('posts/'.$post->image);
+        if (Storage::disk('public')->exists('posts/' . $post->image)) {
+            Storage::disk('public')->delete('posts/' . $post->image);
         }
 
         $post->delete();

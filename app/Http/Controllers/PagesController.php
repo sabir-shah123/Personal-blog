@@ -19,10 +19,8 @@ class PagesController extends Controller
     // BLOG PAGE
     public function blog()
     {
-        dd('blog');
         $month = request('month');
         $year = request('year');
-
         $posts = Post::latest()->withCount('comments')
             ->when($month, function ($query, $month) {
                 return $query->whereMonth('created_at', Carbon::parse($month)->month);
@@ -32,7 +30,6 @@ class PagesController extends Controller
             })
             ->where('status', 1)
             ->paginate(10);
-            
 
         return view('pages.blog.index', compact('posts'));
     }
@@ -40,14 +37,13 @@ class PagesController extends Controller
     public function blogshow($slug)
     {
         $post = Post::with('comments')->withCount('comments')->where('slug', $slug)->first();
-
         $blogkey = 'blog-' . $post->id;
         if (!Session::has($blogkey)) {
             $post->increment('view_count');
             Session::put($blogkey, 1);
         }
 
-        return view('pages.blog.single', compact('post'));
+        return view('pages.blog-detail', compact('post'));
     }
 
     // BLOG COMMENT
@@ -58,7 +54,6 @@ class PagesController extends Controller
         ]);
 
         $post = Post::find($id);
-
         $post->comments()->create(
             [
                 'user_id' => Auth::id(),
@@ -80,8 +75,12 @@ class PagesController extends Controller
             })
             ->where('status', 1)
             ->paginate(10);
+        return view('frontend.index', compact('posts'));
+    }
 
-        return view('pages.blog.index', compact('posts'));
+    public function aboutMe()
+    {
+        return view('pages.about');
     }
 
     // BLOG TAGS
@@ -94,7 +93,7 @@ class PagesController extends Controller
             ->where('status', 1)
             ->paginate(10);
 
-        return view('pages.blog.index', compact('posts'));
+        return view('frontend.index', compact('posts'));
     }
 
     // BLOG AUTHOR
@@ -175,8 +174,21 @@ class PagesController extends Controller
     public function gallery()
     {
         $galleries = Gallery::latest()->paginate(12);
-
         return view('pages.gallery', compact('galleries'));
+    }
+
+    public function search(Request $request)
+    {
+        $search = $request->input('search');
+        $posts = Post::latest()->withCount('comments')
+            ->where('title', 'LIKE', "%{$search}%")
+            ->orWhere('body', 'LIKE', "%{$search}%")
+            ->orWhere('excerpt', 'LIKE', "%{$search}%")
+            ->orWhere('slug', 'LIKE', "%{$search}%")
+            ->where('status', 1)
+            ->paginate(10);
+
+        return view('pages.search', compact('posts'));
     }
 
 }

@@ -82,11 +82,7 @@
                                 <span>Profile</span>
                             </a>
                         </li>
-                        <li class="{{ Request::is('admin/message*') ? 'active' : '' }}">
-                            <a href="{{ route('admin.message') }}">
-                                <span>Message</span>
-                            </a>
-                        </li>
+
                     </ul>
                 </li>
 

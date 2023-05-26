@@ -13,6 +13,7 @@ use Auth;
 use Carbon\Carbon;
 use Hash;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth as FacadesAuth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -53,8 +54,30 @@ class DashboardController extends Controller
 
         foreach ($request->except('_token') as $key => $value) {
             $settings = Setting::where('key', $key)->first() ?? new Setting();
-            $settings->value = $value;
             $settings->key = $key;
+            if ($request->hasFile($key)) {
+                $image = $request->file($key);
+                $slug = Str::slug($request->name);
+
+                if (isset($image)) {
+                    $currentDate = Carbon::now()->toDateString();
+                    $imagename = $slug . '-admin-' . FacadesAuth::id() . '-' . $currentDate . '.' . $image->getClientOriginalExtension();
+                    if (!Storage::disk('public')->exists('users')) {
+                        Storage::disk('public')->makeDirectory('users');
+                    }
+                    if (Storage::disk('public')->exists('users/' . $request->$key) && $request->$key != 'default.png') {
+                        Storage::disk('public')->delete('users/' . $request->$key);
+                    }
+                    $userimage = Image::make($image)->stream();
+                    Storage::disk('public')->put('users/' . $imagename, $userimage);
+                } else {
+                    $imagename = $request->$key;
+                }
+                $settings->value = $imagename;
+            } else {
+                $settings->value = $value;
+            }
+
             $settings->user_id = Auth::id();
             $settings->save();
         }
@@ -113,7 +136,6 @@ class DashboardController extends Controller
         ]);
 
         $user = User::find(Auth::id());
-
         $image = $request->file('image');
         $slug = Str::slug($request->name);
 

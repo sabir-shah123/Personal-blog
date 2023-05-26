@@ -26,8 +26,19 @@
                     </h2>
                 </div>
                 <div class="body">
-                    <form action="{{ route('admin.settings.store') }}" method="POST">
+                    <form action="{{ route('admin.settings.store') }}" method="POST" enctype="multipart/form-data">
                         @csrf
+
+                        <div class="form-group">
+                            <img src="" id="profile-imgsrc" class="img-responsive" height="80" width="80">
+                            <input type="file" name="company_logo" id="profile-image-input" style="display:none;">
+                            <button type="button" class="btn bg-grey btn-sm waves-effect m-t-15" id="profile-image-btn">
+                                <i class="material-icons">image</i>
+                                <span>Upload Company Logo</span>
+                            </button>
+                        </div>
+
+
                         <div class="form-group">
                             <div class="form-line">
                                 <input type="text" name="name" class="form-control"
@@ -39,7 +50,7 @@
                             <div class="form-line">
                                 <input type="email" name="email" class="form-control"
                                     value="{{ $settings->email ?? '' }}">
-                                <label class="form-label">Email</label>
+                                <label class="form-label">Site Email</label>
                             </div>
                         </div>
                         <div class="form-group">
@@ -58,18 +69,11 @@
                             </div>
                             <small class="col-red font-italic">HTML Tag allowed</small>
                         </div>
-                        <div class="form-group">
-                            <div class="form-line">
-                                <input type="text" name="footer" class="form-control"
-                                    value="{{ $settings->footer ?? '' }}">
-                                <label class="form-label">Footer</label>
-                            </div>
-                        </div>
 
                         <div class="form-group">
                             <div class="form-line">
                                 <textarea name="aboutus" rows="4" class="form-control no-resize">{{ $settings->aboutus ?? '' }}</textarea>
-                                <label class="form-label">About Us</label>
+                                <label class="form-label">About Site</label>
                             </div>
                         </div>
 
@@ -78,21 +82,38 @@
                             <div class="form-line">
                                 <input type="text" name="facebook" class="form-control"
                                     value="{{ $settings->facebook ?? '' }}">
-                                <label class="form-label">Facebook Handler</label>
+                                <label class="form-label">Facebook Link</label>
                             </div>
                         </div>
+
+                        <div class="form-group">
+                            <div class="form-line">
+                                <input type="text" name="github" class="form-control"
+                                    value="{{ $settings->github ?? '' }}">
+                                <label class="form-label">Github Link</label>
+                            </div>
+                        </div>
+
                         <div class="form-group">
                             <div class="form-line">
                                 <input type="text" name="twitter" class="form-control"
                                     value="{{ $settings->twitter ?? '' }}">
-                                <label class="form-label">Twitter Handler</label>
+                                <label class="form-label">Twitter Link</label>
                             </div>
                         </div>
+
                         <div class="form-group">
                             <div class="form-line">
                                 <input type="text" name="linkedin" class="form-control"
                                     value="{{ $settings->linkedin ?? '' }}">
-                                <label class="form-label">LinkedIn Handler</label>
+                                <label class="form-label">LinkedIn Link</label>
+                            </div>
+                        </div>
+                         <div class="form-group">
+                            <div class="form-line">
+                                <input type="text" name="youtube" class="form-control"
+                                    value="{{ $settings->youtube ?? '' }}">
+                                <label class="form-label">Youtube Link</label>
                             </div>
                         </div>
 
@@ -100,9 +121,7 @@
                             <i class="material-icons">save</i>
                             <span>SAVE</span>
                         </button>
-
                     </form>
-
                 </div>
             </div>
         </div>
@@ -113,4 +132,24 @@
 
 
 @push('scripts')
+    <script>
+        $(function() {
+            function showImage(fileInput, imgID) {
+                if (fileInput.files[0]) {
+                    var reader = new FileReader();
+                    reader.onload = function(e) {
+                        $(imgID).attr('src', e.target.result);
+                        $(imgID).attr('alt', fileInput.files[0].name);
+                    }
+                    reader.readAsDataURL(fileInput.files[0]);
+                }
+            }
+            $('#profile-image-btn').on('click', function() {
+                $('#profile-image-input').click();
+            });
+            $('#profile-image-input').on('change', function() {
+                showImage(this, '#profile-imgsrc');
+            });
+        })
+    </script>
 @endpush

@@ -29,7 +29,7 @@
 </head>
 
 <body>
-
+    @include('frontend.partials.sticky-social')
     @include('frontend.partials.header')
     @yield('content')
     @include('frontend.partials.footer')
