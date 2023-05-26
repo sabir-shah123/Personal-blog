@@ -1,7 +1,8 @@
 <?php
 
 // FRONT-END ROUTES
-
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 use PhpOffice\PhpSpreadsheet\Calculation\MathTrig\Round;
 
 Route::get('/', 'FrontpageController@index')->name('home');
@@ -43,6 +44,14 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'middleware' => ['aut
     Route::post('galleries/album/store', 'GalleryController@albumStore')->name('album.store');
     Route::get('galleries/{id}/gallery', 'GalleryController@albumGallery')->name('album.gallery');
     Route::post('galleries', 'GalleryController@Gallerystore')->name('galleries.store');
+
+    Route::get('message', 'DashboardController@message')->name('message');
+    Route::get('message/read/{id}', 'DashboardController@messageRead')->name('message.read');
+    Route::get('message/replay/{id}', 'DashboardController@messageReplay')->name('message.replay');
+    Route::post('message/replay', 'DashboardController@messageSend')->name('message.send');
+    Route::post('message/readunread', 'DashboardController@messageReadUnread')->name('message.readunread');
+    Route::delete('message/delete/{id}', 'DashboardController@messageDelete')->name('messages.destroy');
+    Route::post('message/mail', 'DashboardController@contactMail')->name('message.mail');
 
     Route::get('settings', 'DashboardController@settings')->name('settings');
     Route::post('settings', 'DashboardController@settingStore')->name('settings.store');

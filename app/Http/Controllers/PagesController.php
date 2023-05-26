@@ -10,7 +10,6 @@ use App\User;
 use Auth;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
 
 class PagesController extends Controller
@@ -136,17 +135,24 @@ class PagesController extends Controller
 
     public function messageContact(Request $request)
     {
+
         $request->validate([
             'name' => 'required',
             'email' => 'required',
-            'phone' => 'required',
+            'subject' => 'required',
             'message' => 'required',
         ]);
 
         $message = $request->message;
         $mailfrom = $request->email;
 
-        Message::create([
+        //if same email send message and its count is greater then 3 in 1 hour then return error
+        $count = Message::where('email', $mailfrom)->where('created_at', '>=', Carbon::now()->subHour())->count();
+        if ($count > 3) {
+            return back()->with('error', 'You have reached the limit of sending messages. Please try again after 1 hour.');
+        }
+
+        $done = Message::create([
             'agent_id' => 1,
             'name' => $request->name,
             'email' => $mailfrom,
@@ -154,14 +160,15 @@ class PagesController extends Controller
             'message' => $message,
         ]);
 
-        $adminname = User::find(1)->name;
-        $mailto = $request->mailto;
+        $adminname = User::find(1)->name ?? 'Admin';
+        $mailto = $request->mailto ?? 'sabirshahbzu@gmail.com';
+        // Mail::to($mailto)->send(new Contact($message, $adminname, $mailfrom));
 
-        Mail::to($mailto)->send(new Contact($message, $adminname, $mailfrom));
-
-        if ($request->ajax()) {
-            return response()->json(['message' => 'Message send successfully.']);
+        if ($done) {
+            return back()->with('success', 'Message send successfully.');
         }
+
+        return back()->with('error', 'Message not send.');
 
     }
 

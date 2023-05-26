@@ -6,7 +6,7 @@
 @endsection
 
 @section('content')
-    
+
     <section class="section">
         <div class="container">
             <div class="row">
@@ -29,14 +29,17 @@
                 </div>
                 <div class="col-lg-8 mb-5 mb-lg-0">
                     <div class="row">
-                        @forelse ($posts as $post)
-                            <div class="col-md-6 mb-4">
+
+                        {{-- Latest Articles --}}
+
+                        @forelse ($posts as $key=>$post)
+                            <div class="col-md-{{ $key == 0 ? 12 : 6 }} mb-4">
                                 <article class="card article-card article-card-sm h-100">
                                     <a href="{{ route('blog.show', $post->slug) }}">
                                         <div class="card-image">
                                             <div class="post-info">
                                                 <span class="text-uppercase">{{ $post->created_at->format('d M Y') }}</span>
-                                                <span class="text-uppercase">{{ '0' }} minutes read</span>
+                                                <span class="text-uppercase">{{ $post->view_count ?? 0 }} views count </span>
                                             </div>
                                             @if (Storage::disk('public')->exists('posts/' . $post->image) && $post->image)
                                                 <img loading="lazy" decoding="async"
@@ -52,7 +55,7 @@
                                         <ul class="post-meta mb-2">
                                             @foreach ($post->categories as $category)
                                                 <li>
-                                                    <a
+                                                    <a class="bg-success text-white px-2 py-1 rounded"
                                                         href="{{ route('blog.categories', $category->slug) }}">{{ $category->name }}</a>
                                                 </li>
                                             @endforeach

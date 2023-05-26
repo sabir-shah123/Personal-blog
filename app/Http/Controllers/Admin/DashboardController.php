@@ -170,30 +170,27 @@ class DashboardController extends Controller
     // MESSAGE
     public function message()
     {
-        $messages = Message::latest()->where('agent_id', Auth::id())->get();
-
+        $messages = Message::latest()->get();
         return view('admin.settings.messages.index', compact('messages'));
     }
 
     public function messageRead($id)
     {
         $message = Message::findOrFail($id);
-
         return view('admin.settings.messages.readmessage', compact('message'));
     }
 
     public function messageReplay($id)
     {
         $message = Message::findOrFail($id);
-
         return view('admin.settings.messages.replaymessage', compact('message'));
     }
 
     public function messageSend(Request $request)
     {
         $request->validate([
-            'agent_id' => 'required',
-            'user_id' => 'required',
+            // 'agent_id' => 'required',
+            // 'user_id' => 'required',
             'name' => 'required',
             'email' => 'required',
             'phone' => 'required',
@@ -201,7 +198,6 @@ class DashboardController extends Controller
         ]);
 
         Message::create($request->all());
-
         Toastr::success('message', 'Message send successfully.');
         return back();
 
@@ -240,7 +236,7 @@ class DashboardController extends Controller
         $name = $request->name;
         $mailfrom = $request->mailfrom;
 
-        Mail::to($request->email)->send(new Contact($message, $name, $mailfrom));
+        // Mail::to($request->email)->send(new Contact($message, $name, $mailfrom));
 
         Toastr::success('message', 'Mail send successfully.');
         return back();
